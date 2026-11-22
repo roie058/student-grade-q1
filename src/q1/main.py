@@ -143,7 +143,6 @@ class GradeEditorWindow(QWidget):
                     if i == 0 :
                         continue
                     student = students[i].strip().split(",")
-                    print(student)
                     self.student_ids.append(student[0])
                     self.original_grades.append(int(student[1]))
                     self.corrected_grades.append(int(student[1])) 
@@ -154,7 +153,12 @@ class GradeEditorWindow(QWidget):
 
     def on_bonus_entered(self):
         #Update corrected_grades (max 100) and refresh table
-        pass
+        bonus = self.bonus_input.value()
+        for i in range(len(self.corrected_grades)):
+            self.corrected_grades[i] = self.original_grades[i] + bonus
+            if self.corrected_grades[i] > 100:
+                self.corrected_grades[i] = 100
+        self.update_table()
 
     def on_update_file(self):
         #Overwrite CSV with corrected grades and open it
