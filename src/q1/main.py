@@ -11,6 +11,7 @@ from PySide6.QtWidgets import (
     QPushButton,
     QSpinBox,
     QTableWidget,
+    QTableWidgetItem,
     QVBoxLayout,
     QWidget,
 )
@@ -106,6 +107,22 @@ class GradeEditorWindow(QWidget):
             self.about_window = AboutWindow()
         self.about_window.show()
         self.about_window.raise_()
+
+    def update_table(self):
+        self.table.clearContents()
+        row_count = max(50, len(self.student_ids))
+        self.table.setRowCount(row_count)
+
+        for row in range(len(self.student_ids)):
+            values = [
+                str(self.student_ids[row]),
+                str(self.original_grades[row]),
+                str(self.corrected_grades[row]) if row < len(self.corrected_grades) else "",
+            ]
+            for col, text in enumerate(values):
+                item = QTableWidgetItem(text)
+                item.setTextAlignment(Qt.AlignCenter)
+                self.table.setItem(row, col, item)
 
     # --- Placeholders for your logic---
 
