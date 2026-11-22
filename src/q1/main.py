@@ -138,13 +138,15 @@ class GradeEditorWindow(QWidget):
         try:
             with open(self.selected_file, "r") as rows:
                 students = rows.readlines()
-                print(students)
+                
                 for i in range(len(students)):
                     if i == 0 :
                         continue
-                    self.student_ids.append(students[i][0])
-                    self.original_grades.append(int(students[i][1]))
-                self.corrected_grades.append(int(students[i][1])) 
+                    student = students[i].strip().split(",")
+                    print(student)
+                    self.student_ids.append(student[0])
+                    self.original_grades.append(int(student[1]))
+                    self.corrected_grades.append(int(student[1])) 
                 self.update_table()
         except Exception as e:
             print(f"Error loading file: {e}")

@@ -31,11 +31,22 @@ QPushButton#update_btn:hover {
     background-color: #0369a1;
 }
 
+QLabel {
+    color: #0f172a;
+}
+
 QTableWidget {
     background-color: #ffffff;
+    color: #0f172a;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     gridline-color: #e2e8f0;
+    selection-background-color: #e0f2fe;
+    selection-color: #0f172a;
+}
+
+QTableWidget::item {
+    color: #0f172a;
 }
 
 QHeaderView::section {
@@ -49,6 +60,7 @@ QHeaderView::section {
 
 QSpinBox#bonus_input {
     background-color: #ffffff;
+    color: #0f172a;
     border: 1px solid #cbd5e1;
     border-radius: 6px;
     padding: 5px 10px;
