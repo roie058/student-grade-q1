@@ -6,6 +6,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QApplication,
     QFileDialog,
+    QFrame,
     QHBoxLayout,
     QHeaderView,
     QLabel,
@@ -59,6 +60,24 @@ class GradeEditorWindow(QWidget):
         top_layout.addStretch()
         top_layout.addWidget(self.about_btn)
         main_layout.addLayout(top_layout)
+
+        # Bonus: Live Class Statistics Bar
+        stats_frame = QFrame()
+        stats_frame.setObjectName("stats_bar")
+        stats_layout = QHBoxLayout(stats_frame)
+        stats_layout.setContentsMargins(14, 10, 14, 10)
+        stats_layout.setSpacing(16)
+
+        self.orig_avg_label = QLabel("Original Avg: --")
+        self.corr_avg_label = QLabel("Corrected Avg: --")
+        self.pass_rate_label = QLabel("Pass Rate: --")
+        self.perfect_label = QLabel("100s: --")
+
+        for lbl in (self.orig_avg_label, self.corr_avg_label, self.pass_rate_label, self.perfect_label):
+            lbl.setProperty("class", "stat-label")
+            stats_layout.addWidget(lbl)
+
+        main_layout.addWidget(stats_frame)
 
         # Table: 50 rows x 3 columns
         self.table = QTableWidget(50, 3)
@@ -125,6 +144,28 @@ class GradeEditorWindow(QWidget):
                 item.setTextAlignment(Qt.AlignCenter)
                 self.table.setItem(row, col, item)
 
+        self.update_stats()
+
+    def update_stats(self):
+        if len(self.original_grades) == 0 :
+            return
+        orig_avg = sum(self.original_grades)/len(self.original_grades)
+        corr_avg = sum(self.corrected_grades)/len(self.corrected_grades)
+        passed_count = 0
+        perfect_count = 0
+        for i in range(len(self.corrected_grades)):
+            if self.corrected_grades[i]>=60:
+                passed_count+=1
+            if self.corrected_grades[i]==100:
+                perfect_count+=1
+
+        pass_rate = passed_count/len(self.corrected_grades)
+        self.orig_avg_label.setText(f"Original Avg: {orig_avg:.2f}")
+        self.corr_avg_label.setText(f"Corrected Avg: {corr_avg:.2f}")
+        self.pass_rate_label.setText(f"Pass Rate: {pass_rate*100:.2f}%")
+        self.perfect_label.setText(f"100s: {perfect_count}")
+
+
     def open_file_default(self, file_path: str):
         if sys.platform.startswith("win"):
             os.startfile(file_path)
@@ -140,7 +181,7 @@ class GradeEditorWindow(QWidget):
         self.original_grades = []
         self.corrected_grades = []
         if file_path == '' :
-            pass
+            return
 
         self.selected_file = file_path
         try:
@@ -166,6 +207,8 @@ class GradeEditorWindow(QWidget):
             self.corrected_grades[i] = self.original_grades[i] + bonus
             if self.corrected_grades[i] > 100:
                 self.corrected_grades[i] = 100
+            if self.corrected_grades[i] < 0:
+                self.corrected_grades[i] = 0
         self.update_table()
 
     def on_update_file(self):
@@ -175,10 +218,10 @@ class GradeEditorWindow(QWidget):
                     rows.write("ID,Grade\n")
                     for i in range(len(self.student_ids)):
                         rows.write(f"{self.student_ids[i]},{self.corrected_grades[i]}\n")
-                self.open_file_default(self.selected_file)
-
                 self.bonus_input.setValue(0)
                 self.on_load_file(self.selected_file)
+                self.open_file_default(self.selected_file)
+
             except Exception as e:
                 print(f"Error updating file: {e}")
         
