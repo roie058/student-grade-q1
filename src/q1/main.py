@@ -111,7 +111,27 @@ class GradeEditorWindow(QWidget):
 
     def on_load_file(self, file_path: str):
         #Save file_path and load student IDs & grades
-        pass
+        self.student_ids = []
+        self.original_grades = []
+        self.corrected_grades = []
+        if file_path == '' :
+            pass
+
+        self.selected_file = file_path
+        try:
+            with open(self.selected_file, "r") as rows:
+                students = rows.readlines()
+                print(students)
+                for i in range(len(students)):
+                    if i == 0 :
+                        continue
+                    self.student_ids.append(students[i][0])
+                    self.original_grades.append(int(students[i][1]))
+                self.corrected_grades.append(int(students[i][1])) 
+                self.update_table()
+        except Exception as e:
+            print(f"Error loading file: {e}")
+                
 
     def on_bonus_entered(self):
         #Update corrected_grades (max 100) and refresh table
