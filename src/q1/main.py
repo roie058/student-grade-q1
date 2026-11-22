@@ -161,8 +161,15 @@ class GradeEditorWindow(QWidget):
         self.update_table()
 
     def on_update_file(self):
-        #Overwrite CSV with corrected grades and open it
-        pass
+        if self.selected_file:
+            try:
+                with open(self.selected_file, "w") as rows:
+                    rows.write("ID,Grade\n")
+                    for i in range(len(self.student_ids)):
+                        rows.write(f"{self.student_ids[i]},{self.corrected_grades[i]}\n")
+            except Exception as e:
+                print(f"Error updating file: {e}")
+        
 
 
 def main():
