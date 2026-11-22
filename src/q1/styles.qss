@@ -57,10 +57,6 @@ QTableWidget {
     selection-color: #0f172a;
 }
 
-QTableWidget::item {
-    color: #0f172a;
-}
-
 QHeaderView::section {
     background-color: #f1f5f9;
     color: #334155;
@@ -77,4 +73,20 @@ QSpinBox#bonus_input {
     border-radius: 6px;
     padding: 5px 10px;
     min-width: 80px;
+}
+
+QComboBox#bonus_mode {
+    background-color: #ffffff;
+    color: #0f172a;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 5px 10px;
+    min-width: 90px;
+}
+
+QComboBox#bonus_mode QAbstractItemView {
+    background-color: #ffffff;
+    color: #0f172a;
+    selection-background-color: #e0f2fe;
+    selection-color: #0f172a;
 }

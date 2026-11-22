@@ -3,8 +3,10 @@ import subprocess
 import sys
 
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QColor
 from PySide6.QtWidgets import (
     QApplication,
+    QComboBox,
     QFileDialog,
     QFrame,
     QHBoxLayout,
@@ -89,12 +91,17 @@ class GradeEditorWindow(QWidget):
         # Bottom bar: Bonus input (ENTER) + Update File button
         bottom_layout = QHBoxLayout()
 
-        bonus_label = QLabel("Bonus Points (Press ENTER):")
+        bonus_label = QLabel("Bonus (Press ENTER):")
         self.bonus_input = QSpinBox()
         self.bonus_input.setObjectName("bonus_input")
         self.bonus_input.setRange(-100, 100)
         self.bonus_input.setValue(0)
         self.bonus_input.lineEdit().returnPressed.connect(self.on_bonus_entered)
+
+        self.bonus_mode = QComboBox()
+        self.bonus_mode.setObjectName("bonus_mode")
+        self.bonus_mode.addItems(["+ Points", "+ %"])
+        self.bonus_mode.currentTextChanged.connect(self.on_bonus_mode_changed)
 
         self.update_btn = QPushButton("Update File")
         self.update_btn.setObjectName("update_btn")
@@ -102,9 +109,14 @@ class GradeEditorWindow(QWidget):
 
         bottom_layout.addWidget(bonus_label)
         bottom_layout.addWidget(self.bonus_input)
+        bottom_layout.addWidget(self.bonus_mode)
         bottom_layout.addStretch()
         bottom_layout.addWidget(self.update_btn)
         main_layout.addLayout(bottom_layout)
+
+    def on_bonus_mode_changed(self, mode: str):
+        self.bonus_input.setSuffix("%" if mode == "+ %" else "")
+        self.on_bonus_entered()
 
     def load_stylesheet(self):
         qss_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "styles.qss")
@@ -142,9 +154,29 @@ class GradeEditorWindow(QWidget):
             for col, text in enumerate(values):
                 item = QTableWidgetItem(text)
                 item.setTextAlignment(Qt.AlignCenter)
+
+                if col == 1:
+                    self.style_grade_item(item, self.original_grades[row])
+                elif col == 2 and row < len(self.corrected_grades):
+                    self.style_grade_item(item, self.corrected_grades[row], self.original_grades[row])
+
                 self.table.setItem(row, col, item)
 
         self.update_stats()
+
+    def style_grade_item(self, item: QTableWidgetItem, grade: int, original: int | None = None):
+        if grade < 60:
+            item.setBackground(QColor("#fee2e2"))
+            item.setForeground(QColor("#b91c1c"))
+        elif grade == 100:
+            item.setBackground(QColor("#e0f2fe"))
+            item.setForeground(QColor("#0369a1"))
+        elif original is not None and grade > original:
+            item.setBackground(QColor("#dcfce7"))
+            item.setForeground(QColor("#15803d"))
+        elif original is not None and grade < original:
+            item.setBackground(QColor("#fef3c7"))
+            item.setForeground(QColor("#b45309"))
 
     def update_stats(self):
         if len(self.original_grades) == 0 :
@@ -201,10 +233,15 @@ class GradeEditorWindow(QWidget):
                 
 
     def on_bonus_entered(self):
-        #Update corrected_grades (max 100) and refresh table
+        mode =self.bonus_mode.currentText()
+
         bonus = self.bonus_input.value()
         for i in range(len(self.corrected_grades)):
-            self.corrected_grades[i] = self.original_grades[i] + bonus
+            if mode == '+ %':
+               self.corrected_grades[i] = round(self.original_grades[i]*(1+bonus/100))
+            else:  
+               self.corrected_grades[i] = self.original_grades[i] + bonus
+
             if self.corrected_grades[i] > 100:
                 self.corrected_grades[i] = 100
             if self.corrected_grades[i] < 0:

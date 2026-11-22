@@ -1,0 +1,5 @@
+Bonus Features Added (Student Grade Editor):
+1. Live Class Statistics Bar:
+   Displays Original Average, Corrected Average, Pass Rate (>= 60), and count of perfect 100 grades above the table.
+2. Bonus Mode Toggle:
+   Allows switching between adding flat bonus points and applying a percentage factor.
