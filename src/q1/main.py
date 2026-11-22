@@ -29,7 +29,10 @@ class GradeEditorWindow(QWidget):
         self.setWindowTitle("Student Grade Editor")
         self.resize(700, 560)
 
-        # Add the 4 required window variables here
+        self.student_ids = []
+        self.original_grades = []
+        self.corrected_grades = []
+        self.selected_file = ''
 
         self.about_window = None
         self.init_ui()
