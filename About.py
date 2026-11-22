@@ -183,7 +183,7 @@ class AboutWindow(QWidget):
         self.github_btn.setProperty("class", "social-btn")
         self.github_btn.setCursor(Qt.PointingHandCursor)
         self.github_btn.clicked.connect(
-            lambda: QDesktopServices.openUrl(QUrl("https://github.com/roie058"))
+            lambda: QDesktopServices.openUrl(QUrl("https://github.com/roie058/student-grade-q1"))
         )
         social_layout.addWidget(self.github_btn)
 
