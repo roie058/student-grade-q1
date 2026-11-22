@@ -1,4 +1,5 @@
 import os
+import subprocess
 import sys
 
 from PySide6.QtCore import Qt
@@ -124,7 +125,14 @@ class GradeEditorWindow(QWidget):
                 item.setTextAlignment(Qt.AlignCenter)
                 self.table.setItem(row, col, item)
 
-    # --- Placeholders for your logic---
+    def open_file_default(self, file_path: str):
+        if sys.platform.startswith("win"):
+            os.startfile(file_path)
+        elif sys.platform == "darwin":
+            subprocess.Popen(["open", file_path])
+        else:
+            subprocess.Popen(["xdg-open", file_path])
+
 
     def on_load_file(self, file_path: str):
         #Save file_path and load student IDs & grades
@@ -167,6 +175,10 @@ class GradeEditorWindow(QWidget):
                     rows.write("ID,Grade\n")
                     for i in range(len(self.student_ids)):
                         rows.write(f"{self.student_ids[i]},{self.corrected_grades[i]}\n")
+                self.open_file_default(self.selected_file)
+
+                self.bonus_input.setValue(0)
+                self.on_load_file(self.selected_file)
             except Exception as e:
                 print(f"Error updating file: {e}")
         
